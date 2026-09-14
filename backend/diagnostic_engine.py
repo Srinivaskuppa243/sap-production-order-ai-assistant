@@ -51,6 +51,7 @@ def diagnose_production_order(order_id):
             "issue":"Missing Routing",
             "material":material,
             "severity":"HIGH",
+            "evidence":f"No routing operations found for material {material}.",
             "recommendation":"Check the production routing and maintain the required operations for this material."
             
         })
@@ -67,6 +68,7 @@ def diagnose_production_order(order_id):
                 "operation": confirmation["operation"],
                 "issue": "Operation not confirmed",
                 "severity": "MEDIUM",
+                "evidence": f"Operation {confirmation['operation']} has confirmation status {confirmation['status']}.",
                 "recommendation": "Check the production order operation and confirm the operation if production has been completed."
             })
     for component in material_bom:
@@ -92,6 +94,7 @@ def diagnose_production_order(order_id):
                 "available": 0,
                 "shortage": required_quantity,
                 "severity": "HIGH",
+                "evidence": f"No inventory record exists for component {component['component']} at plant {plant}.",
                 "recommendation": "Check procurement or planning for the missing component quantity."
             })
             continue
@@ -106,6 +109,7 @@ def diagnose_production_order(order_id):
                 "required": required_quantity,
                 "available": available_quantity,
                 "shortage": shortage,
+                "evidence": f"Required {required_quantity} units, available {available_quantity} units, shortage {shortage} units.",
                 "severity": "HIGH",
                 "recommendation": "Check procurement or planning for the missing component quantity."
             })
@@ -140,7 +144,6 @@ def summarize_diagnosis(result):
         severity = issue.get("severity", "UNKNOWN")
         issue_name = issue.get("issue", "Unknown issue")
         recommendation = issue.get("recommendation", "No recommendation available.")
-
         lines.append(f"- [{severity}] {issue_name}")
 
         if "component" in issue:
